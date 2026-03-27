@@ -1,0 +1,264 @@
+:root {
+  --color-primary: #6366f1;
+  --color-text: #1f2937;
+  --color-text-light: #6b7280;
+  --color-surface: #fff;
+  --color-background: #f3f4f6;
+  --color-border: #e5e7eb;
+  --sidebar-width: 250px;
+  --header-height: 64px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* =======================================================================
+   1. 顶层应用布局 (App Layout) -> 使用 CSS Grid
+   -----------------------------------------------------------------------
+   - `grid-template-areas`: 提供了宏观页面结构最直观、最语义化的定义方式。就像在代码中绘制页面草图，结构一目了然。
+========================================================================== */
+body {
+  font-family: system-ui, -apple-system, sans-serif;
+  background: var(--color-background);
+  color: var(--color-text);
+  height: 100vh;
+  display: grid;
+  grid-template-rows: var(--header-height) 1fr auto; /* header定高, footer自适应, main占满剩余 */
+  grid-template-areas:
+    "header"
+    "body"
+    "footer";
+}
+
+.app-header {
+  grid-area: header;
+}
+.app-body {
+  grid-area: body;
+}
+.app-footer {
+  grid-area: footer;
+}
+
+/* =======================================================================
+   2. 应用头部 (App Header) -> 使用 Flexbox
+   -----------------------------------------------------------------------
+   - 元素水平排列，我们事先并不知道有多少个导航，它们的排列依赖元素内在尺寸。
+   - 空间分配: `justify-content: space-between` 可以非常简单地实现两端对齐的布局，这是 Flexbox 的经典用例。
+   - 元素对齐: `align-items: center` 可以轻松实现所有子元素的垂直居中。
+========================================================================== */
+.app-header {
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.app-header__logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.app-header__nav {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.app-header__nav-link {
+  text-decoration: none;
+  color: var(--color-text-light);
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.app-header__nav-link:hover {
+  color: var(--color-primary);
+}
+
+.app-header__hamburger {
+  display: none; /* 默认在桌面端隐藏 */
+}
+
+/* =======================================================================
+   3. 主体内容区 (App Body) -> 使用 Flexbox
+   -----------------------------------------------------------------------
+   - `flex-shrink: 0` 在侧边栏上可以防止其被挤压，`flex-grow: 1` 在主内容区上可以使其占据所有剩余空间。
+   - 这种经典的分配剩余空间的模式是 Flexbox 的核心优势之一。
+========================================================================== */
+.app-body {
+  display: flex;
+  max-width: 1600px;
+  width: 100%;
+  margin: 0 auto;
+  min-height: 0;
+}
+
+.sidebar {
+  width: var(--sidebar-width);
+  flex-shrink: 0; /* 固定宽度，不允许收缩 */
+  background: var(--color-surface);
+  padding: 2rem;
+  border-right: 1px solid var(--color-border);
+}
+
+.sidebar__title {
+  font-size: 1.2rem;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+.filter-group {
+  margin-bottom: 2rem;
+}
+
+.filter-group__title {
+  font-weight: bold;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.filter-group__item {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: var(--color-text-light);
+}
+
+/* ----- 主要内容 (Main Content) ----- */
+.main-content {
+  flex-grow: 1; /* 占据所有剩余空间 */
+  padding: 2rem;
+  overflow-y: auto; /* 当内容过多时，允许独立滚动 */
+}
+
+.main-content__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.main-content__title {
+  font-size: 2rem;
+  font-weight: 800;
+}
+
+.main-content__filter-toggle {
+  display: none; /* 默认在桌面端隐藏 */
+}
+
+.main-content__filter-toggle > span {
+  margin-left: 8px;
+  vertical-align: middle;
+}
+
+/* =======================================================================
+   4. 产品网格 (Product Grid) -> 使用 CSS Grid
+   -----------------------------------------------------------------------
+   - 响应式网格系统: `repeat(auto-fill, minmax(280px, 1fr))` 是 Grid 的一个强大特性。
+     它能自动计算一行可以容纳多少个卡片，并在空间不足时自动换行，实现了完美的响应式网格布局。
+   - 间距控制: `gap` 属性可以非常方便地设置网格项之间的间距，而无需担心 `margin` 带来的折叠或额外计算问题。
+========================================================================== */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+/* =======================================================================
+   5. 产品卡片 (Product Card) -> 内部使用 CSS Grid 实现叠加效果
+========================================================================== */
+.product-card {
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  min-height: 380px;
+  display: grid; /* 将卡片自身设为 grid 容器 */
+  grid-template-rows: 1fr;
+  grid-template-columns: 1fr;
+}
+
+.product-card > * {
+  grid-row: 1 / -1;
+  grid-column: 1 / -1;
+}
+
+.product-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-card__image {
+  transform: scale(1.05);
+}
+
+.product-card__overlay {
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent 60%);
+  z-index: 1;
+}
+
+.product-card__content {
+  z-index: 2;
+  padding: 1.5rem;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.product-card__title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.product-card__price {
+  font-size: 1.1rem;
+  margin-top: 0.5rem;
+  opacity: 0.9;
+}
+
+.app-footer {
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  text-align: center;
+  padding: 1.5rem;
+  color: var(--color-text-light);
+  font-size: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .app-header__nav {
+    display: none;
+  }
+
+  .app-header__hamburger,
+  .main-content__filter-toggle {
+    display: flex;
+    align-items: center;
+    background: none;
+    border: 1px solid var(--color-border);
+    padding: 0.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .sidebar {
+    display: none;
+  }
+
+  .app-header {
+    padding: 0 1rem;
+  }
+  .main-content {
+    padding: 1rem;
+  }
+}
